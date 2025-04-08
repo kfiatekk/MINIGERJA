@@ -8,14 +8,11 @@ public class QuizUI : MonoBehaviour
     public Button optionBButton;
     public Button optionCButton;
     public Text scoreText;
-    public Text timerText;
 
     public GameObject resultsPanel;
     public Text resultsText;
 
     public int score = 0;
-    private float timeRemaining = 30f;
-    private bool isTimerRunning = false;
     private bool quizEnded = false;
     private float resultsDisplayTime = 5f; // Czas wyœwietlania podsumowania wyników
     private float resultsTimer = 0f;
@@ -29,24 +26,10 @@ public class QuizUI : MonoBehaviour
         optionCButton.onClick.AddListener(() => OnOptionSelected("C"));
 
         UpdateScoreText();
-        StartTimer();
     }
 
     void Update()
     {
-        if (isTimerRunning && !quizEnded)
-        {
-            if (timeRemaining > 0)
-            {
-                timeRemaining -= Time.deltaTime;
-                timerText.text = "Time: " + Mathf.Round(timeRemaining).ToString();
-            }
-            else
-            {
-                EndQuiz();
-            }
-        }
-
         if (resultsPanel.activeSelf)
         {
             resultsTimer += Time.deltaTime;
@@ -83,19 +66,6 @@ public class QuizUI : MonoBehaviour
         optionCButton.GetComponentInChildren<Text>().text = question.options[2];
 
         ResetButtonColors();
-        ResetTimer();
-    }
-
-    public void StartTimer()
-    {
-        isTimerRunning = true;
-    }
-
-    public void ResetTimer()
-    {
-        timeRemaining = 30f;
-        timerText.text = "." + timeRemaining.ToString();
-        StartTimer();
     }
 
     public void UpdateScoreText()
@@ -139,7 +109,6 @@ public class QuizUI : MonoBehaviour
 
     public void EndQuiz()
     {
-        isTimerRunning = false;
         quizEnded = true;
         gameObject.SetActive(false);
         Time.timeScale = 1f;
@@ -149,7 +118,6 @@ public class QuizUI : MonoBehaviour
         if (remainingAttempts <= 0)
         {
             Debug.Log("Koniec quizu. Brak dostêpnych prób.");
-            isTimerRunning = false;
             quizEnded = true;
             gameObject.SetActive(false);
             Time.timeScale = 1f;
@@ -191,6 +159,5 @@ public class QuizUI : MonoBehaviour
         UpdateScoreText();
         FindObjectOfType<QuizManager>().Start(); // Resetuje pytania w QuizManager
         gameObject.SetActive(true);
-        StartTimer();
     }
 }
