@@ -94,7 +94,7 @@ public class QuizUI : MonoBehaviour
     public void ResetTimer()
     {
         timeRemaining = 30f;
-        timerText.text = "Time: " + timeRemaining.ToString();
+        timerText.text = "." + timeRemaining.ToString();
         StartTimer();
     }
 
@@ -149,6 +149,12 @@ public class QuizUI : MonoBehaviour
         if (remainingAttempts <= 0)
         {
             Debug.Log("Koniec quizu. Brak dostêpnych prób.");
+            isTimerRunning = false;
+            quizEnded = true;
+            gameObject.SetActive(false);
+            Time.timeScale = 1f;
+            resultsPanel.SetActive(true);
+            resultsTimer = 0f;
         }
     }
 

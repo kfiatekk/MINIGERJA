@@ -10,96 +10,116 @@ public class QuizManager : MonoBehaviour
     private int incorrectAnswers = 0;
     private const int minimumCorrectAnswersToPass = 5;
 
-    public bool isQuizCompleted = false; // Czy quiz zosta³ ukoñczony?
+    public bool isQuizCompleted = false;
+    public bool canRetryQuiz = true;
 
-    public void Start() // Zmieniono na public, aby umo¿liwiæ reset quizu
+    public void Start()
     {
         if (isQuizCompleted)
         {
-            Debug.Log("Quiz zosta³ ju¿ ukoñczony. Nie mo¿esz go ponownie rozwi¹zaæ.");
+            Debug.Log("Quiz zostal juz ukonczony z sukcesem. Nie mozesz go ponownie rozwiazac.");
             return;
         }
 
-        questions = new List<Question>
+        if (!canRetryQuiz)
         {
-            new Question
-            {
-                questionText = "Co to jest zmienna w programowaniu?",
-                options = new List<string>
-                {
-                    "Funkcja matematyczna",
-                    "Miejsce do przechowywania danych",
-                    "Instrukcja warunkowa"
-                },
-                correctOption = "B"
-            },
-            new Question
-            {
-                questionText = "Który symbol s³u¿y do porównania wartoœci?",
-                options = new List<string>
-                {
-                    "=",
-                    "==",
-                    "!="
-                },
-                correctOption = "B"
-            },
-            new Question
-            {
-                questionText = "Jak nazywa siê struktura, która wykonuje kod wielokrotnie?",
-                options = new List<string>
-                {
-                    "Warunek",
-                    "Pêtla",
-                    "Zmienne"
-                },
-                correctOption = "B"
-            },
-            new Question
-            {
-                questionText = "Do obs³ugi wyj¹tków u¿yj:",
-                options = new List<string>
-                {
-                    "try",
-                    "catch",
-                    "throw"
-                },
-                correctOption = "B"
-            },
-            new Question
-            {
-                questionText = "Co robi return?",
-                options = new List<string>
-                {
-                    "Stop",
-                    "Zwraca",
-                    "Deklaruje"
-                },
-                correctOption = "B"
-            },
-            new Question
-            {
-                questionText = "do-while vs while?",
-                options = new List<string>
-                {
-                    "while raz",
-                    "do-while raz",
-                    "bez ró¿nicy"
-                },
-                correctOption = "B"
-            },
-            new Question
-            {
-                questionText = "null oznacza:",
-                options = new List<string>
-                {
-                    "Brak wartoœci",
-                    "Zero",
-                    "Typ"
-                },
-                correctOption = "A"
-            }
-        };
+            Debug.Log("Ostatni wynik byl ponizej progu. Mozesz sprobowac ponownie.");
+        }
+
+        questions = new List<Question>
+{
+    new Question
+    {
+        questionText = "Czym jest zmienna?",
+        options = new List<string> { "Petla", "Pamiec na dane", "Funkcja" },
+        correctOption = "B"
+    },
+    new Question
+    {
+        questionText = "Symbol porownania wartosci:",
+        options = new List<string> { "=", "==", "=>" },
+        correctOption = "B"
+    },
+    new Question
+    {
+        questionText = "Do czego sluzy petla?",
+        options = new List<string> { "Do warunku", "Do liczenia", "Do powtorzen" },
+        correctOption = "C"
+    },
+    new Question
+    {
+        questionText = "Jak obslugiwac wyjatki?",
+        options = new List<string> { "if", "catch", "loop" },
+        correctOption = "B"
+    },
+    new Question
+    {
+        questionText = "return w funkcji:",
+        options = new List<string> { "Zwraca wartosc", "Tworzy zmienna", "Usuwa funkcje" },
+        correctOption = "A"
+    },
+    new Question
+    {
+        questionText = "do-while robi co najmniej:",
+        options = new List<string> { "Jeden raz", "Zero razy", "Dwa razy" },
+        correctOption = "A"
+    },
+    new Question
+    {
+        questionText = "null oznacza:",
+        options = new List<string> { "Brak wartosci", "Zero", "Prawda" },
+        correctOption = "A"
+    },
+    new Question
+    {
+        questionText = "Czym jest funkcja?",
+        options = new List<string> { "Zmienna", "Blok kodu", "Petla" },
+        correctOption = "B"
+    },
+    new Question
+    {
+        questionText = "Co robi instrukcja if?",
+        options = new List<string> { "Powtarza", "Warunkuje", "Tworzy" },
+        correctOption = "B"
+    },
+    new Question
+    {
+        questionText = "Jaki typ dla liczb calkowitych?",
+        options = new List<string> { "int", "float", "string" },
+        correctOption = "A"
+    },
+    new Question
+    {
+        questionText = "float przechowuje:",
+        options = new List<string> { "Tekst", "Liczby calkowite", "Liczby zmiennoprzecinkowe" },
+        correctOption = "C"
+    },
+    new Question
+    {
+        questionText = "bool moze byc:",
+        options = new List<string> { "int lub float", "true lub false", "tekst" },
+        correctOption = "B"
+    },
+    new Question
+    {
+        questionText = "Tablica to:",
+        options = new List<string> { "Zmienna", "Zbior elementow", "Funkcja" },
+        correctOption = "B"
+    },
+    new Question
+    {
+        questionText = "new w C# oznacza:",
+        options = new List<string> { "Nowy typ", "Nowy obiekt", "Nowy warunek" },
+        correctOption = "B"
+    },
+    new Question
+    {
+        questionText = "Ktory z ponizszych to petla?",
+        options = new List<string> { "if", "loop", "for" },
+        correctOption = "C"
+    }
+};
+
 
         currentQuestionIndex = 0;
         incorrectAnswers = 0;
@@ -118,9 +138,16 @@ public class QuizManager : MonoBehaviour
         else
         {
             bool isPassed = quizUI.score >= minimumCorrectAnswersToPass;
-            if (isPassed || !isPassed)
+
+            if (isPassed)
             {
-                isQuizCompleted = true; // Oznacz quiz jako zakoñczony
+                isQuizCompleted = true;
+                canRetryQuiz = false;
+            }
+            else
+            {
+                Debug.Log("Nie zaliczyles quizu. Mozesz sprobowac ponownie.");
+                canRetryQuiz = true;
             }
 
             quizUI.ShowFinalResults(quizUI.score, incorrectAnswers, isPassed);
@@ -132,7 +159,7 @@ public class QuizManager : MonoBehaviour
     {
         if (currentQuestionIndex >= questions.Count)
         {
-            Debug.LogWarning("Klikniêto po zakoñczeniu quizu");
+            Debug.LogWarning("Kliknieto po zakonczeniu quizu");
             return;
         }
 

@@ -6,8 +6,6 @@ public class QuizTrigger : MonoBehaviour
     public GameObject gameManager;
     private bool isPlayerNear = false;
 
-    private bool quizAlreadyCompleted = false; // Flaga sprawdzaj¹ca, czy quiz zosta³ ukoñczony
-
     void Start()
     {
         gameManager.SetActive(false);
@@ -17,25 +15,22 @@ public class QuizTrigger : MonoBehaviour
     {
         if (isPlayerNear && Input.GetKeyDown(KeyCode.E))
         {
-            if (quizAlreadyCompleted)
-            {
-                Debug.Log("Quiz zosta³ ju¿ rozwi¹zany. Nie mo¿esz podejœæ ponownie.");
-                return; // Nie pozwalaj na ponowne uruchomienie quizu
-            }
-
             QuizManager quizManager = gameManager.GetComponent<QuizManager>();
 
             if (quizManager.isQuizCompleted)
             {
-                quizAlreadyCompleted = true; // Oznacz quiz jako ukoñczony
-                Debug.Log("Quiz zosta³ ju¿ rozwi¹zany. Nie mo¿esz podejœæ ponownie.");
+                Debug.Log("Quiz zosta³ ju¿ rozwi¹zany z sukcesem. Nie mo¿esz go ponownie uruchomiæ.");
                 return;
             }
 
-            quizPanel.SetActive(true);
-            gameManager.SetActive(true);
-            quizManager.Start(); // Uruchom quiz
-            Time.timeScale = 0f;
+            if (quizManager.canRetryQuiz)
+            {
+                Debug.Log("Rozpoczynasz quiz od nowa.");
+                quizPanel.SetActive(true);
+                gameManager.SetActive(true);
+                quizManager.Start(); // Uruchom quiz
+                Time.timeScale = 0f;
+            }
         }
     }
 
