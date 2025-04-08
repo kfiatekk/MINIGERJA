@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UI; // Add this line to include the UnityEngine.UI namespace
 
 public class QuizManager : MonoBehaviour
 {
@@ -8,68 +7,103 @@ public class QuizManager : MonoBehaviour
 
     private List<Question> questions;
     private int currentQuestionIndex = 0;
+    private int incorrectAnswers = 0;
+    private const int minimumCorrectAnswersToPass = 5;
 
-    void Start()
+    public bool isQuizCompleted = false; // Czy quiz zosta³ ukoñczony?
+
+    public void Start() // Zmieniono na public, aby umo¿liwiæ reset quizu
     {
+        if (isQuizCompleted)
+        {
+            Debug.Log("Quiz zosta³ ju¿ ukoñczony. Nie mo¿esz go ponownie rozwi¹zaæ.");
+            return;
+        }
+
         questions = new List<Question>
         {
             new Question
             {
-                questionText = "Która linijka poprawnie wypisuje tekst 'Hello World' w Javie?",
+                questionText = "Co to jest zmienna w programowaniu?",
                 options = new List<string>
                 {
-                    "System.out.printline(\"Hello World\");",
-                    "System.out.println(\"Hello World\");",
-                    "print(\"Hello World\");"
+                    "Funkcja matematyczna",
+                    "Miejsce do przechowywania danych",
+                    "Instrukcja warunkowa"
                 },
                 correctOption = "B"
             },
             new Question
             {
-                questionText = "Jakie s³owo kluczowe w Javie s³u¿y do tworzenia nowego obiektu?",
+                questionText = "Który symbol s³u¿y do porównania wartoœci?",
                 options = new List<string>
                 {
-                    "new",
-                    "create",
-                    "object"
+                    "=",
+                    "==",
+                    "!="
+                },
+                correctOption = "B"
+            },
+            new Question
+            {
+                questionText = "Jak nazywa siê struktura, która wykonuje kod wielokrotnie?",
+                options = new List<string>
+                {
+                    "Warunek",
+                    "Pêtla",
+                    "Zmienne"
+                },
+                correctOption = "B"
+            },
+            new Question
+            {
+                questionText = "Do obs³ugi wyj¹tków u¿yj:",
+                options = new List<string>
+                {
+                    "try",
+                    "catch",
+                    "throw"
+                },
+                correctOption = "B"
+            },
+            new Question
+            {
+                questionText = "Co robi return?",
+                options = new List<string>
+                {
+                    "Stop",
+                    "Zwraca",
+                    "Deklaruje"
+                },
+                correctOption = "B"
+            },
+            new Question
+            {
+                questionText = "do-while vs while?",
+                options = new List<string>
+                {
+                    "while raz",
+                    "do-while raz",
+                    "bez ró¿nicy"
+                },
+                correctOption = "B"
+            },
+            new Question
+            {
+                questionText = "null oznacza:",
+                options = new List<string>
+                {
+                    "Brak wartoœci",
+                    "Zero",
+                    "Typ"
                 },
                 correctOption = "A"
-            },
-            new Question
-            {
-                questionText = "Jak poprawnie zdefiniowaæ klasê w Javie?",
-                options = new List<string>
-                {
-                    "function MojaKlasa {}",
-                    "class MojaKlasa {}",
-                    "define class MojaKlasa {}"
-                },
-                correctOption = "B"
-            },
-            new Question
-            {
-                questionText = "Który typ danych s³u¿y do przechowywania liczb ca³kowitych w Javie?",
-                options = new List<string>
-                {
-                    "int",
-                    "string",
-                    "float"
-                },
-                correctOption = "A"
-            },
-            new Question
-            {
-                questionText = "Co oznacza skrót JVM?",
-                options = new List<string>
-                {
-                    "Java Variable Manager",
-                    "Java Virtual Machine",
-                    "Java Visual Mode"
-                },
-                correctOption = "B"
-            },
-            // Add more questions here
+            }
         };
+
+        currentQuestionIndex = 0;
+        incorrectAnswers = 0;
+        quizUI.score = 0;
 
         DisplayQuestion();
     }
@@ -78,41 +112,43 @@ public class QuizManager : MonoBehaviour
     {
         if (currentQuestionIndex < questions.Count)
         {
-            quizUI.questionText.text = questions[currentQuestionIndex].questionText;
-            quizUI.optionAButton.GetComponentInChildren<Text>().text = questions[currentQuestionIndex].options[0];
-            quizUI.optionBButton.GetComponentInChildren<Text>().text = questions[currentQuestionIndex].options[1];
-            quizUI.optionCButton.GetComponentInChildren<Text>().text = questions[currentQuestionIndex].options[2];
-
-            // Reset timer for each question
-            quizUI.ResetTimer();
+            var q = questions[currentQuestionIndex];
+            quizUI.DisplayQuestion(q, currentQuestionIndex + 1, questions.Count);
         }
         else
         {
+            bool isPassed = quizUI.score >= minimumCorrectAnswersToPass;
+            if (isPassed || !isPassed)
+            {
+                isQuizCompleted = true; // Oznacz quiz jako zakoñczony
+            }
+
+            quizUI.ShowFinalResults(quizUI.score, incorrectAnswers, isPassed);
             quizUI.EndQuiz();
         }
     }
 
     public void OnOptionSelected(string option)
     {
-        if (currentQuestionIndex < questions.Count)
+        if (currentQuestionIndex >= questions.Count)
         {
-            if (option == questions[currentQuestionIndex].correctOption)
-            {
-                quizUI.score++;
-                quizUI.scoreText.text = "Score: " + quizUI.score;
-            }
-            else
-            {
-                quizUI.IncorrectAnswer();
-            }
+            Debug.LogWarning("Klikniêto po zakoñczeniu quizu");
+            return;
+        }
 
-            currentQuestionIndex++;
-            DisplayQuestion();
+        if (option == questions[currentQuestionIndex].correctOption)
+        {
+            quizUI.score++;
+            quizUI.UpdateScoreText();
         }
         else
         {
-            Debug.LogWarning("Index out of range: " + currentQuestionIndex);
+            incorrectAnswers++;
+            quizUI.IncorrectAnswer(option);
         }
+
+        currentQuestionIndex++;
+        DisplayQuestion();
     }
 }
 
