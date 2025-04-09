@@ -17,9 +17,22 @@ public class QuizTrigger : MonoBehaviour
         {
             QuizManager quizManager = gameManager.GetComponent<QuizManager>();
 
+            if (quizManager.remainingAttempts <= 0)
+            {
+                Debug.Log("Nie masz ju¿ wiêcej prób dostêpnych. Nie mo¿esz uruchomiæ tej mini gry.");
+                return;
+            }
+
             if (quizManager.isQuizCompleted)
             {
                 Debug.Log("Quiz zosta³ ju¿ rozwi¹zany z sukcesem. Nie mo¿esz go ponownie uruchomiæ.");
+                return;
+            }
+
+            // Nowa blokada: Sprawdzanie, czy gra ju¿ trwa
+            if (quizPanel.activeSelf)
+            {
+                Debug.Log("Gra ju¿ trwa. Nie mo¿na jej ponownie uruchomiæ.");
                 return;
             }
 
@@ -28,7 +41,7 @@ public class QuizTrigger : MonoBehaviour
                 Debug.Log("Rozpoczynasz quiz od nowa.");
                 quizPanel.SetActive(true);
                 gameManager.SetActive(true);
-                quizManager.Start(); // Uruchom quiz
+                quizManager.Start(); // Uruchomienie quizu
                 Time.timeScale = 0f;
             }
         }
